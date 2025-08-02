@@ -1,12 +1,12 @@
-from django.shortcuts import render
 from django.utils import timezone
 from datetime import timedelta
 from django.db.models import Sum
 from .models import Sale
 from .forms import SaleForm
-from django.shortcuts import render, redirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
+from customer.models import Customer, CustomerStatement
+
 
 def sales_dashboard(request):
     today = timezone.now().date()
@@ -44,23 +44,87 @@ def sales_dashboard(request):
     return render(request, 'sales_dashboard.html', context)
 
 
+
+
+# views.py
+from .forms import SaleForm
+
 def sale_create(request):
     if request.method == 'POST':
         form = SaleForm(request.POST)
         if form.is_valid():
-            form.save()
+            sale = form.save(commit=False)
+            sale.amount = sale.qty * sale.rate  # calculate amount
+            sale.save()
+
+            # If credit, update customer statement
+            if sale.payment_mode == "Credit":
+                last_entry = CustomerStatement.objects.filter(customer=sale.customer).order_by('-date', '-id').first()
+                previous_balance = last_entry.balance if last_entry else sale.customer.opening_balance
+                new_balance = previous_balance + sale.amount
+
+                CustomerStatement.objects.create(
+                    customer=sale.customer,
+                    date=sale.date,
+                    description=f"Credit Sale - {sale.material} (Qty: {sale.qty} {sale.unit})",
+                    credit=sale.amount,
+                    debit=0,
+                    balance=new_balance
+                )
+
             return redirect('sales_dashboard')
     else:
         form = SaleForm()
-    return render(request, 'sale_form.html', {'form': form})
+
+    return render(request, 'create_sale.html', {'form': form})
+
 
 def sale_update(request, pk):
     sale = get_object_or_404(Sale, pk=pk)
-    form = SaleForm(request.POST or None, instance=sale)
-    if form.is_valid():
-        form.save()
-        return redirect('sales_dashboard')
-    return render(request, 'sale_form.html', {'form': form})
+    old_amount = sale.amount
+    old_payment_mode = sale.payment_mode
+    old_date = sale.date
+
+    if request.method == 'POST':
+        form = SaleForm(request.POST, instance=sale)
+        if form.is_valid():
+            updated_sale = form.save(commit=False)
+            updated_sale.amount = updated_sale.qty * updated_sale.rate
+            updated_sale.save()
+
+            # Handle CustomerStatement adjustment if payment mode is credit
+            if old_payment_mode == 'Credit':
+                # Delete the old statement
+                CustomerStatement.objects.filter(
+                    customer=sale.customer,
+                    date=old_date,
+                    credit=old_amount,
+                    description__icontains="Credit Sale"
+                ).delete()
+
+            if updated_sale.payment_mode == "Credit":
+                # Recalculate balance
+                last_entry = CustomerStatement.objects.filter(
+                    customer=updated_sale.customer
+                ).order_by('-date', '-id').first()
+
+                previous_balance = last_entry.balance if last_entry else updated_sale.customer.opening_balance
+                new_balance = previous_balance + updated_sale.amount
+
+                CustomerStatement.objects.create(
+                    customer=updated_sale.customer,
+                    date=updated_sale.date,
+                    description=f"Credit Sale - {updated_sale.material} (Qty: {updated_sale.qty} {updated_sale.unit})",
+                    credit=updated_sale.amount,
+                    debit=0,
+                    balance=new_balance
+                )
+
+            return redirect('sales_dashboard')
+    else:
+        form = SaleForm(instance=sale)
+
+    return render(request, 'create_sale.html', {'form': form})
 
 def sale_delete(request, pk):
     sale = get_object_or_404(Sale, pk=pk)

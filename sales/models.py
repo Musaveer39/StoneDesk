@@ -1,4 +1,5 @@
 from django.db import models
+from customer.models import Customer
 
 class Sale(models.Model):
     PAYMENT_CHOICES = [
@@ -8,16 +9,17 @@ class Sale(models.Model):
         ("Bank", "Bank"),
     ]
 
-    customer = models.CharField(max_length=100)
+    UNIT_CHOICES = [("Brass", "Brass"),("Ton", "Ton"), ("Cubic Meter", "Cubic Meter")]
+
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     vehicle = models.CharField(max_length=100)
     material = models.CharField(max_length=100)
     qty = models.FloatField()
     rate = models.FloatField()
     amount = models.FloatField()
-    unit_choices = [("Brass", "Brass"),("Ton", "Ton"), ("Cubic Meter", "Cubic Meter")]
-    unit = models.CharField(max_length=20, choices=unit_choices)
+    unit = models.CharField(max_length=20, choices=UNIT_CHOICES)
     payment_mode = models.CharField(max_length=20, choices=PAYMENT_CHOICES)
     date = models.DateField()
 
     def __str__(self):
-        return f"{self.customer} - {self.material} - {self.date}"
+        return f"{self.customer.name} - {self.material} - {self.date}"

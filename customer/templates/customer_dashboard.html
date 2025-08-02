@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Customer Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Customer Dashboard</h2>
+        <a href="{% url 'add_customer' %}" class="btn btn-success">+ Add Customer</a>
+    </div>
+
+    <table class="table table-bordered table-striped align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Opening Balance</th>
+                <th>Outstanding Balance</th>
+                <th>Address</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in customer_data %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ item.customer.name }}</td>
+                <td>{{ item.customer.phone }}</td>
+                <td>{{ item.customer.opening_balance }}</td>
+                <td>{{ item.balance }}</td>
+                <td>{{ item.customer.address }}</td>
+                <td>
+                    <a href="{% url 'customer_statement' item.customer.id %}" class="btn btn-primary btn-sm">
+                        Statement
+                    </a>
+                    <a href="{% url 'pay_due' item.customer.id %}" class="btn btn-warning btn-sm">
+                        Pay Dues
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="text-center">No customers found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

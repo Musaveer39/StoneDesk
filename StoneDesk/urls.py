@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path
 from users.views import login_view, dashboard
 from sales.views import sales_dashboard, sale_create, sale_update, sale_delete, print_invoice, print_dc
+from customer.views import customer_dashboard, add_customer, customer_statement,pay_due
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,5 +31,9 @@ urlpatterns = [
     path('delete/<int:pk>/', sale_delete, name='sale_delete'),
     path('print/<int:pk>/', print_invoice, name='print_invoice'), 
     path('print_dc/<int:pk>/', print_dc, name='print_dc'),  # Print delivery challan view
-     # Sales dashboard view
+    path('customers/', customer_dashboard, name='customer_dashboard'),
+    path('customers/add/', add_customer, name='add_customer'),
+    path('customers/statement/<int:customer_id>/', customer_statement, name='customer_statement'),
+    path('customers/pay_due/<int:customer_id>/', pay_due, name='pay_due'),  # Pay due view
+    
 ]
