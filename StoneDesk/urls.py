@@ -17,12 +17,18 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from users.views import login_view, dashboard
-from sales.views import sales_dashboard, sale_list, sale_create, sale_update, sale_delete, todays_sales_total
+from sales.views import sales_dashboard, sale_create, sale_update, sale_delete, print_invoice, print_dc
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', login_view, name='login'),  # Login view
     path('dashboard/', dashboard, name='dashboard'),  # Dashboard view
     path('sales/', sales_dashboard, name='sales_dashboard'),
-    path('sales/addsale',sale_create,'add_sale'),  # Sales dashboard view
+    
+    path('add/', sale_create, name='sale_create'),
+    path('edit/<int:pk>/', sale_update, name='sale_edit'),
+    path('delete/<int:pk>/', sale_delete, name='sale_delete'),
+    path('print/<int:pk>/', print_invoice, name='print_invoice'), 
+    path('print_dc/<int:pk>/', print_dc, name='print_dc'),  # Print delivery challan view
+     # Sales dashboard view
 ]

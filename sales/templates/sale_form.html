@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ form.instance.pk|yesno:"Edit,Add" }} Sale</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-7">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header bg-primary text-white rounded-top-4">
+                    <h3 class="mb-0 text-center">{{ form.instance.pk|yesno:"Edit,Add" }} Sale</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            {{ form.date.label_tag }}
+                            {{ form.date }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.customer.label_tag }}
+                            {{ form.customer }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.vehicle.label_tag }}
+                            {{ form.vehicle }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.material.label_tag }}
+                            {{ form.material }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_qty" class="form-label">Quantity:</label>
+                            <input type="number" step="any" name="qty" id="id_qty" class="form-control" value="{{ form.qty.value|default:'' }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_rate" class="form-label">Rate:</label>
+                            <input type="number" step="any" name="rate" id="id_rate" class="form-control" value="{{ form.rate.value|default:'' }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_amount" class="form-label">Amount:</label>
+                            <input type="number" step="any" name="amount" id="id_amount" class="form-control bg-light" value="{{ form.amount.value|default:'' }}" readonly>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.unit.label_tag }}
+                            {{ form.unit }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.payment_mode.label_tag }}
+                            {{ form.payment_mode }}
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="submit" class="btn btn-success px-4">💾 Save</button>
+                            <a href="{% url 'sales_dashboard' %}" class="btn btn-outline-secondary">↩ Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <footer class="text-center mt-4 text-muted small">
+                Powered by <strong>StoneDesk</strong>
+            </footer>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const qtyInput = document.getElementById('id_qty');
+    const rateInput = document.getElementById('id_rate');
+    const amountInput = document.getElementById('id_amount');
+
+    function updateAmount() {
+        const qty = parseFloat(qtyInput.value) || 0;
+        const rate = parseFloat(rateInput.value) || 0;
+        amountInput.value = (qty * rate).toFixed(2);
+    }
+
+    qtyInput.addEventListener('input', updateAmount);
+    rateInput.addEventListener('input', updateAmount);
+});
+</script>
+
+</body>
+</html>

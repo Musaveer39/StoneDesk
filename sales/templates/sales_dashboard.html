@@ -1,40 +1,129 @@
-<!-- sales/templates/sales/dashboard.html -->
-<h2>Sales Dashboard</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sales Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .filter-label {
+            font-weight: 500;
+        }
+        .btn-outline-custom {
+            border-color: #0d6efd;
+            color: #0d6efd;
+        }
+        .btn-outline-custom:hover {
+            background-color: #0d6efd;
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-light">
 
-<p><strong>Today's Date:</strong> {{ today_date }}</p>
-<p><strong>Today's Sales Total:</strong> ₹{{ total_today }}</p>
+<div class="container py-5">
 
-<hr>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary">Sales Dashboard - {{ today }}</h2>
+        <div>
+            <a href="{% url 'sale_create' %}" class="btn btn-success me-2">➕ Add Sale</a>
+            <a href="{% url 'dashboard' %}" class="btn btn-outline-dark">🏠 Back to Main Dashboard</a>
+        </div>
+    </div>
 
-<table border="1">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Customer</th>
-            <th>Vehicle</th>
-            <th>Material</th>
-            <th>Qty</th>
-            <th>Unit</th>
-            <th>Rate</th>
-            <th>Amount</th>
-            <th>Payment Mode</th>
-            <th>Date</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for sale in sales %}
-        <tr>
-            <td>{{ sale.0 }}</td>
-            <td>{{ sale.1 }}</td>
-            <td>{{ sale.2 }}</td>
-            <td>{{ sale.3 }}</td>
-            <td>{{ sale.4 }}</td>
-            <td>{{ sale.5 }}</td>
-            <td>{{ sale.6 }}</td>
-            <td>{{ sale.7 }}</td>
-            <td>{{ sale.8 }}</td>
-            <td>{{ sale.9 }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+    <!-- Date Filters -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-2">
+                    <label class="form-label filter-label">Filter By</label>
+                    <select class="form-select" name="filter" id="filterSelect" onchange="toggleCustomDate(this.value)">
+                        <option value="today">Today</option>
+                        <option value="this_week">This Week</option>
+                        <option value="this_month">This Month</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-none" id="customDates">
+                    <label class="form-label filter-label">Start Date</label>
+                    <input type="date" name="start_date" class="form-control">
+                </div>
+                <div class="col-md-3 d-none" id="customDatesEnd">
+                    <label class="form-label filter-label">End Date</label>
+                    <input type="date" name="end_date" class="form-control">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-outline-custom w-100">Apply Filter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <p class="fs-5"><strong>Total Sales:</strong> ₹{{ total_amount }}</p>
+
+            <div class="table-responsive">
+                <table class="table table-striped table-hover table-bordered align-middle">
+                    <thead class="table-dark text-center">
+                        <tr>
+                            <th>Customer</th>
+                            <th>Vehicle</th>
+                            <th>Material</th>
+                            <th>Qty</th>
+                            <th>Rate</th>
+                            <th>Amount</th>
+                            <th>Unit</th>
+                            <th>Payment Mode</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sale in sales %}
+                        <tr>
+                            <td>{{ sale.customer }}</td>
+                            <td>{{ sale.vehicle }}</td>
+                            <td>{{ sale.material }}</td>
+                            <td class="text-end">{{ sale.qty }}</td>
+                            <td class="text-end">₹{{ sale.rate }}</td>
+                            <td class="text-end">₹{{ sale.amount }}</td>
+                            <td>{{ sale.unit }}</td>
+                            <td>{{ sale.payment_mode }}</td>
+                            <td class="text-center">
+                                <a href="{% url 'sale_edit' sale.id %}" class="btn btn-sm btn-warning">Edit</a>
+                                <a href="{% url 'sale_delete' sale.id %}" class="btn btn-sm btn-danger">Delete</a>
+                                <a href="{% url 'print_invoice' sale.id %}" class="btn btn-sm btn-secondary">Print</a>
+                                <a href="{% url 'print_dc' sale.id %}" class="btn btn-sm btn-secondary">Print-DC</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="9" class="text-center text-muted">No sales found for selected date range.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function toggleCustomDate(value) {
+        const start = document.getElementById('customDates');
+        const end = document.getElementById('customDatesEnd');
+        if (value === 'custom') {
+            start.classList.remove('d-none');
+            end.classList.remove('d-none');
+        } else {
+            start.classList.add('d-none');
+            end.classList.add('d-none');
+        }
+    }
+</script>
+
+</body>
+</html>

@@ -14,7 +14,8 @@ class Sale(models.Model):
     qty = models.FloatField()
     rate = models.FloatField()
     amount = models.FloatField()
-    unit = models.CharField(max_length=20)
+    unit_choices = [("Brass", "Brass"),("Ton", "Ton"), ("Cubic Meter", "Cubic Meter")]
+    unit = models.CharField(max_length=20, choices=unit_choices)
     payment_mode = models.CharField(max_length=20, choices=PAYMENT_CHOICES)
     date = models.DateField()
 
