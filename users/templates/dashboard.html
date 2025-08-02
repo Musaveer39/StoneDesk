@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>StoneDesk Dashboard</title>
+    <style>
+        body { font-family: Arial; margin: 0; background-color: #f0f0f0; }
+        .sidebar { background: #1e1e1e; color: white; width: 200px; float: left; height: 100vh; padding: 20px 0; }
+        .sidebar button { width: 100%; background: #2e2e2e; color: white; padding: 10px; border: none; text-align: left; margin: 5px 0; }
+        .main { margin-left: 200px; padding: 20px; }
+        .tile { background: white; border: 1px solid #ccc; padding: 20px; margin: 10px; float: left; width: 180px; height: 100px; }
+        .clearfix { clear: both; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2 style="text-align:center;">StoneDesk</h2>
+    <button>Dashboard</button>
+    <a href="/sales"><button>Sales</button></a>
+    <button>Purchase</button>
+    <button>Customer</button>
+    <button>Supplier</button>
+    <button>Vehicle</button>
+    <button>Material</button>
+    <button>Expense</button>
+    <button>Maintenance</button>
+    <button>Employee</button>
+    <button>Report</button>
+</div>
+
+<div class="main">
+    <h2>Dashboard - Role: {{ role }}</h2>
+    {% for title, value in tile_data %}
+        <div class="tile">
+            <strong>{{ title }}</strong><br>
+            <h3>{{ value }}</h3>
+        </div>
+    {% endfor %}
+    <div class="clearfix"></div>
+</div>
+
+</body>
+</html>

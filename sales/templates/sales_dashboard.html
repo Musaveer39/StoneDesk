@@ -1,0 +1,40 @@
+<!-- sales/templates/sales/dashboard.html -->
+<h2>Sales Dashboard</h2>
+
+<p><strong>Today's Date:</strong> {{ today_date }}</p>
+<p><strong>Today's Sales Total:</strong> ₹{{ total_today }}</p>
+
+<hr>
+
+<table border="1">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Customer</th>
+            <th>Vehicle</th>
+            <th>Material</th>
+            <th>Qty</th>
+            <th>Unit</th>
+            <th>Rate</th>
+            <th>Amount</th>
+            <th>Payment Mode</th>
+            <th>Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for sale in sales %}
+        <tr>
+            <td>{{ sale.0 }}</td>
+            <td>{{ sale.1 }}</td>
+            <td>{{ sale.2 }}</td>
+            <td>{{ sale.3 }}</td>
+            <td>{{ sale.4 }}</td>
+            <td>{{ sale.5 }}</td>
+            <td>{{ sale.6 }}</td>
+            <td>{{ sale.7 }}</td>
+            <td>{{ sale.8 }}</td>
+            <td>{{ sale.9 }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
